@@ -1,0 +1,41 @@
+services:
+  database:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: limesurvey
+      MARIADB_USER: limesurvey
+      MARIADB_PASSWORD: "VERVANG_MET_DATABASEWACHTWOORD"
+      MARIADB_ROOT_PASSWORD: "VERVANG_MET_ROOTWACHTWOORD"
+    volumes:
+      - database_data:/var/lib/mysql
+
+  limesurvey:
+    image: martialblog/limesurvey:7-apache
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DB_PORT: "3306"
+      DB_NAME: limesurvey
+      DB_USERNAME: limesurvey
+      DB_PASSWORD: "VERVANG_MET_DATABASEWACHTWOORD"
+      DB_MYSQL_ENGINE: InnoDB
+
+      ADMIN_USER: beheerder
+      ADMIN_NAME: "LimeSurvey beheerder"
+      ADMIN_EMAIL: "beheerder@example.org"
+      ADMIN_PASSWORD: "VERVANG_MET_BEHEERDERSWACHTWOORD"
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    volumes:
+      - limesurvey_upload:/var/www/html/upload
+      - limesurvey_config:/var/www/html/application/config
+
+volumes:
+  database_data:
+  limesurvey_upload:
+  limesurvey_config:
